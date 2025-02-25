@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración del Portal Cautivo</title>
+    <link rel="stylesheet" href="../static/css/administration.css">
+    <link rel="icon" href="../static/img/faviconEsumer.png" type="image/png">
+</head>
+<body>
+    <img src="../static/img/LogoEsumer.webp" alt="Logo Esumer" class="imgEsumer">
+    <h2>Administración del Portal Cautivo</h2>
+    
+    <h3>Sube archivos para Presentar en el Carrusel</h3>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" accept="video/mp4,image/*" required>
+        <button type="submit">Subir Archivo</button>
+    </form>
+    
+    <h3>Seleccionar Archivos para el Carrusel</h3>
+    <form id="carouselForm">
+        <table id="fileTable">
+            <thead>
+                <tr>
+                    <th>Nombre del Archivo</th>
+                    <th>En Carrusel</th>
+                    <th>Url</th>
+                    <th>Visualizar</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="submit">Guardar Selección</button>
+    </form>
+    <p id="status"></p>
+
+    <h3>Archivos Actuales en el Carrusel</h3>
+    <div id="carouselImages"></div>
+
+    <!-- Modal -->
+    <div id="imageModal" class="modal" style="display: none;">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div id="caption"></div>
+    </div>
+    
+    <script>
+        async function loadFiles() {
+            const response = await fetch("/files/");
+            const data = await response.json();
+            const carouselResponse = await fetch("/carousel_files/");
+            const carouselData = await carouselResponse.json();
+            const carouselFiles = new Set(carouselData.files);
+
+            const fileTableBody = document.querySelector("#fileTable tbody");
+            fileTableBody.innerHTML = "";
+            data.files.forEach((file, index) => {
+                const row = document.createElement("tr");
+
+                const nameCell = document.createElement("td");
+                const label = document.createElement("label");
+                label.htmlFor = "file" + index;
+                label.innerText = file;
+                nameCell.appendChild(label);
+
+                const carouselCell = document.createElement("td");
+                const carouselCheckbox = document.createElement("input");
+                carouselCheckbox.type = "checkbox";
+                carouselCheckbox.name = "carouselFiles";
+                carouselCheckbox.value = file;
+                carouselCheckbox.id = "file" + index;
+                if (carouselFiles.has(file)) {
+                    carouselCheckbox.checked = true;
+                }
+                carouselCell.appendChild(carouselCheckbox);
+
+                const urlCell = document.createElement("td");
+                const urlInput = document.createElement("input");
+                urlInput.type = "url";
+                urlInput.name = "fileUrls";
+                urlInput.placeholder = "http://example.com";
+                urlInput.dataset.file = file;
+                urlCell.appendChild(urlInput);
+
+                const viewCell = document.createElement("td");
+                const viewButton = document.createElement("button");
+                viewButton.innerText = "Ver";
+                viewButton.type = "button"; // Asegúrate de que el botón no envíe el formulario
+                viewButton.addEventListener("click", function() {
+                    openModal(`/uploads/${file}`, file);
+                });
+                viewCell.appendChild(viewButton);
+
+                const deleteCell = document.createElement("td");
+                const deleteButton = document.createElement("button");
+                deleteButton.innerText = "Eliminar";
+                deleteButton.type = "button"; // Asegúrate de que el botón no envíe el formulario
+                deleteButton.style.backgroundColor = "red";
+                deleteButton.dataset.file = file;
+                deleteButton.addEventListener("click", async function() {
+                    const filename = this.dataset.file;
+                    const confirmDelete = confirm(`¿Estás seguro de que deseas eliminar el archivo "${filename}"?`);
+                    if (confirmDelete) {
+                        const response = await fetch(`/delete_file/?filename=${filename}`, {
+                            method: "DELETE"
+                        });
+                        const result = await response.json();
+                        document.getElementById("status").innerText = result.message;
+                        loadFiles();
+                        loadCarouselFiles(); // Asegúrate de que esta línea esté presente
+                    }
+                });
+                deleteCell.appendChild(deleteButton);
+
+                row.appendChild(nameCell);
+                row.appendChild(carouselCell);
+                row.appendChild(urlCell);
+                row.appendChild(viewCell);
+                row.appendChild(deleteCell);
+                fileTableBody.appendChild(row);
+            });
+        }
+
+        async function loadCarouselFiles() {
+            const response = await fetch("/carousel_files/");
+            const data = await response.json();
+            const carouselImages = document.getElementById("carouselImages");
+            const prevButton = document.getElementById("prevButton");
+            const nextButton = document.getElementById("nextButton");
+
+            carouselImages.innerHTML = "";
+            data.files.forEach(file => {
+                const link = document.createElement("a");
+                link.href = data.urls[file] || "#";
+                link.target = "_blank";
+                const img = document.createElement("img");
+                img.src = `/uploads/${file}`;
+                img.alt = file;
+                img.style.width = "100px"; // Ajusta el tamaño de las imágenes según sea necesario
+                img.style.margin = "10px";
+                link.appendChild(img);
+                carouselImages.appendChild(link);
+            });
+
+            if (data.files.length === 1) {
+                prevButton.style.display = "none";
+                nextButton.style.display = "none";
+            } else {
+                prevButton.style.display = "inline-block";
+                nextButton.style.display = "inline-block";
+            }
+        }
+
+        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch("/upload/", {
+                method: "POST",
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById("status").innerText = result.message;
+            loadFiles();
+            loadCarouselFiles(); // Asegúrate de que esta línea esté presente
+        });
+
+        document.getElementById("carouselForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const selectedFiles = formData.getAll("carouselFiles");
+            const fileUrls = {};
+            document.querySelectorAll("input[name='fileUrls']").forEach(input => {
+                if (input.value) {
+                    fileUrls[input.dataset.file] = input.value;
+                }
+            });
+            if (selectedFiles.length < 1 || selectedFiles.length > 3) {
+                alert("Debes seleccionar entre 1 y 3 archivos.");
+                return;
+            }
+            const response = await fetch("/set_carousel_files/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ files: selectedFiles, urls: fileUrls })
+            });
+            const result = await response.json();
+            document.getElementById("status").innerText = result.message;
+            loadCarouselFiles(); // Asegúrate de que esta línea esté presente
+        });
+
+        loadFiles();
+        loadCarouselFiles();
+
+        // Modal functionality
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImage");
+        const captionText = document.getElementById("caption");
+        const span = document.getElementsByClassName("close")[0];
+
+        function openModal(src, alt) {
+            modal.style.display = "block";
+            modalImg.src = src;
+            captionText.innerText = alt;
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

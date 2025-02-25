@@ -1,0 +1,309 @@
+@font-face {
+    font-family: 'Poppins';
+    src: url('../fonts/Poppins-Regular.ttf') format('truetype');
+}
+
+body {
+    font-family: 'Poppins', Arial, sans-serif !important;
+    text-align: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 2px;
+}
+
+
+h2 {
+    color: #333;
+    text-align: left;
+    font-family: 'Poppins', Arial, sans-serif !important;
+}
+
+p {
+    color: #666;
+    text-align: justify;
+    font-family: 'Poppins', Arial, sans-serif !important;
+}
+
+#carouselContainer {
+    position: relative;
+    width: 100%;
+    height: auto; /* Permite que el contenedor se ajuste al tamaño de la imagen */
+    max-height: 100vh; /* No permite que sea más grande que la pantalla */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#carouselImages {
+    display: flex;
+    transition: transform 1s ease-in-out;
+}
+
+#carouselImages img {
+    width: auto; /* Evita que la imagen se deforme */
+    height: 100vh; /* La imagen usa toda la altura de la pantalla */
+    max-width: 100%; /* Evita que la imagen sea más ancha que el contenedor */
+    object-fit: contain; /* Evita recortes */
+}
+
+#fileContainer {
+    flex: 1;
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+}
+
+/* #buttonContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 15px;
+} */
+
+#buttonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Espacio entre los botones */
+    flex-wrap: wrap; /* Permite que los botones se ajusten en pantallas pequeñas */
+}
+
+
+.image {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+
+.arrow-button {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 0 5px;
+    width: 45px;
+    height: 40px;
+}
+
+.arrow-button:hover {
+    background-color: #003366;
+}
+
+#startButton {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 12px 40px;
+    width: 220px;
+    height: 45px;
+    text-align: center;
+    font-size: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'Poppins', Arial, sans-serif !important;
+}
+
+#startButton:hover {
+    background-color: #002244;
+}
+
+#startButton:hover {
+    background-color: #003366;
+}
+
+#status {
+    color: #333;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    text-align: justify;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.modal-button {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Poppins', Arial, sans-serif !important;
+}
+
+.modal-button:hover {
+    background-color: #002244;
+}
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 2px;
+    }
+
+    #carouselContainer {
+        height: auto; /* Permite que el contenedor crezca con la imagen */
+        max-height: none;
+    }
+
+    #carouselImages img {
+        width: 100%; /* Asegura que la imagen ocupe todo el ancho */
+        height: auto; /* Mantiene la proporción original */
+        max-height: 100vh;
+    }
+
+    #fileContainer {
+        height: auto;
+    }
+
+    video, .image {
+        max-width: 100%;
+        max-height: 300px;
+    }
+
+    .arrow-button {
+        padding: 6px 12px;
+        font-size: 14px;
+        width: 80px;
+        height: 40px;
+    }
+
+    #buttonContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px; /* Espacio entre botones de flechas */
+        flex-direction: column; /* Asegura que estén en columna */
+    }
+
+    #startButton {
+        margin-top: 10px; /* Espacio de 10px con los botones de flecha */
+        width: 220px; /* Un poco más ancho en pantallas pequeñas */
+        height: 40px;
+        font-size: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Poppins', Arial, sans-serif !important;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 2px;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    p {
+        font-size: 1em;
+    }
+
+    #carouselContainer {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #fileContainer {
+        height: auto;
+    }
+
+    /* video, .image {
+        max-width: 100%;
+        max-height: 250px;
+    } */
+
+    .arrow-button {
+        padding: 5px 10px;
+        font-size: 12px;
+        width: 70px;
+        height: 45px;
+        flex:1px;
+    }
+
+    .image {
+        width: 100%; /* La imagen ocupa todo el ancho del contenedor */
+        height: auto; /* Mantiene la proporción original */
+        max-height: 80vh; /* Evita que la imagen sea más alta que la pantalla */
+        object-fit: contain; /* Asegura que no se recorte ni deforme */
+    }
+
+    #carouselImages img {
+        width: 100%;
+        height: auto;
+        max-height: 90vh; /* Ajusta la altura máxima para móviles */
+    }
+
+    #buttonContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px; /* Espacio entre botones de flechas */
+        flex-direction: row; 
+    }
+
+    #startButton {
+        margin-top: 10px; 
+        width: 220px; 
+        height: 45px;
+        font-size: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Poppins', Arial, sans-serif !important;
+    }
+}

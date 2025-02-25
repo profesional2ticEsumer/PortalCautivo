@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Cautivo</title>
+    <link rel="stylesheet" href="../static/css/portalstyle.css">
+    <link rel="icon" href="../static/img/faviconEsumer.png" type="image/png"> <!-- Agregar favicon -->
+</head>
+<body>
+
+    <img src="../static/img/BANNERFIJO.jpg" alt="Banner Esumer" class="imgEsumer" style="width: 100%; height: auto;">
+    
+    <div id="carouselContainer">
+        <div id="fileContainer"></div>
+    </div>
+
+    <div id="buttonContainer">
+        <button id="prevButton" class="arrow-button">&#9664;</button>
+        <button id="startButton">Iniciar Conexión con la Red Wi-Fi</button>
+        <button id="nextButton" class="arrow-button">&#9654;</button>
+    </div>
+    
+    <p id="status"></p>
+
+    <!-- Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Términos y Condiciones</h2>
+            <p>Al acceder al portal WiFi, usted adquiere la condici&oacute;n de usuario, lo cual obligatoriamente conlleva a la aceptaci&oacute;n de todos y cada uno de los t&eacute;rminos y condiciones de uso.</p>
+            <p>El portal WiFi es una red inal&aacute;mbrica abierta, por tanto, no se garantiza su navegaci&oacute;n 100% segura. Recuerde que no hay comunicaci&oacute;n de red privada o protegida y que todas las comunicaciones a trav&eacute;s de esta red est&aacute;n sujetas a la supervisi&oacute;n por parte del personal encargado. Los medios de comunicaci&oacute;n y materiales almacenados en el entorno de las redes de la Instituci&oacute;n Universitaria Esumer, est&aacute;n sujetos a divulgaci&oacute;n en virtud de un marco legal basados en la Ley 1273 del 5 de enero de 2009 y la Ley 1581 del 17 de octubre de 2012.</p>
+            <p>El servicio ser&aacute; restringido para ciertos equipos en caso de que se detecte tr&aacute;fico excesivo de los mismos, o condiciones que indiquen que est&aacute;n interfiriendo con el funcionamiento normal de la red inal&aacute;mbrica.</p>
+            <p>La Instituci&oacute;n Universitaria Esumer NO controla los datos, contenidos, servicios o productos a los que el usuario accede o descarga a trav&eacute;s del portal WiFi, y se exime de toda responsabilidad por:</p>
+            <ul>
+            <li>La ausencia de disponibilidad y continuidad del funcionamiento del servicio de acceso del portal WiFi.</li>
+            <li>Cualquier incidente o evento de seguridad ocasionado al usuario o a terceros con su uso.</li>
+            <li>Cualquier da&ntilde;o que resulte de la descarga o el acceso a informaci&oacute;n o material en Internet.</li>
+            <li>La exactitud, contenido, integridad, legalidad, fiabilidad, operabilidad o disponibilidad de la informaci&oacute;n o material que es accesible a trav&eacute;s del portal.</li>
+            <li>La vulneraci&oacute;n de los derechos de propiedad intelectual y de toda otra naturaleza de derechos con ocasi&oacute;n de la transmisi&oacute;n, difusi&oacute;n, puesta a disposici&oacute;n, recepci&oacute;n, acceso, obtenci&oacute;n de contenidos, servicios y/o productos a trav&eacute;s del portal.</li>
+            </ul>
+            <p>El usuario conoce y entiende que ser&aacute; el &uacute;nico responsable por cualquier da&ntilde;o a su sistema inform&aacute;tico o p&eacute;rdida de datos resultante de la descarga de informaci&oacute;n o datos a trav&eacute;s del portal WiFi, y se obliga y compromete a NO UTILIZARLO para:</p>
+            <p>Actividades que est&eacute;n prohibidas por la legislaci&oacute;n Colombiana, que sean contrarias al orden p&uacute;blico o a las buenas costumbres o atenten contra derechos de terceros.</p>
+            <ul>
+            <li>El uso indebido para transmitir o utilizar software y/o hardware que pueda enviar elementos o datos de naturaleza il&iacute;cita, fraudulenta, amenazante, abusiva, injuriosa, difamatoria, obscena o de alguna forma objetable, interceptaci&oacute;n de comunicaciones o ingreso no autorizado a los equipos de red.</li>
+            <li>Actividades que causen cualquier perjuicio o riesgo de seguridad a la red de la Instituci&oacute;n.</li>
+            </ul>
+            <p>El usuario al momento de obtener acceso a la red inal&aacute;mbrica Esumer, conoce y manifiesta su consentimiento para que el &aacute;rea de Seguridad Inform&aacute;tica realice monitoreo en su conexi&oacute;n de acceso a la red inal&aacute;mbrica cuando lo juzgue necesario, &uacute;nicamente con el prop&oacute;sito de mantener la integridad y operaci&oacute;n efectiva de los puntos de acceso, verificar el cumplimiento de estas pol&iacute;ticas o cuando responda a un requerimiento de las autoridades administrativas o judiciales.</p>
+                <div class="modal-buttons">
+                <button id="cancelButton" class="modal-button">Cancelar</button>
+                <button id="acceptButton" class="modal-button">Aceptar y Conectar</button>
+            </div>
+        </div>
+    </div>
+    <style>
+        .fade {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+    
+        .fade.show {
+            opacity: 1;
+        }
+    </style>
+    <script>
+        let currentFileIndex = 0;
+        let files = [];
+        let carouselInterval;
+
+        async function loadFiles() {
+            const response = await fetch("/carousel_files/");
+            const data = await response.json();
+            files = data.files.map(file => ({
+                name: file,
+                url: data.urls[file] || null
+            }));
+            const container = document.getElementById("fileContainer");
+            const prevButton = document.getElementById("prevButton");
+            const nextButton = document.getElementById("nextButton");
+
+            if (files.length > 0) {
+                loadFile(currentFileIndex);
+                if (files.length > 1) {
+                    startCarousel();
+                    prevButton.style.display = "inline-block";
+                    nextButton.style.display = "inline-block";
+                } else {
+                    prevButton.style.display = "none";
+                    nextButton.style.display = "none";
+                }
+            } else {
+                container.innerHTML = "<p>No hay archivos disponibles.</p>";
+            }
+        }
+
+        function loadFile(index) {
+            const container = document.getElementById("fileContainer");
+            
+            // Crear contenedor temporal con clase fade
+            const tempContainer = document.createElement("div");
+            tempContainer.classList.add("fade");
+            
+            const file = files[index];
+            
+            if (file.name.endsWith(".mp4")) {
+                const video = document.createElement("video");
+                video.src = "/file/" + file.name;
+                video.controls = true;
+                video.autoplay = true;
+                video.classList.add("video");
+                
+                tempContainer.appendChild(video);
+                
+                video.addEventListener("ended", function() {
+                    currentFileIndex = (currentFileIndex + 1) % files.length;
+                    loadFile(currentFileIndex);
+                });
+
+            } else {
+                const img = document.createElement("img");
+                img.src = "/file/" + file.name;
+                img.classList.add("image");
+
+                // Verificar si hay una URL asociada a la imagen
+                if (file.url) {
+                    const link = document.createElement("a");
+                    link.href = file.url;
+                    link.target = "_blank";
+                    link.appendChild(img);
+                    tempContainer.appendChild(link);
+                } else {
+                    tempContainer.appendChild(img);
+                }
+            }
+            
+            // Reemplazar contenido del contenedor y activar transición
+            container.innerHTML = "";
+            container.appendChild(tempContainer);
+            
+            setTimeout(() => {
+                tempContainer.classList.add("show");
+            }, 50); // Pequeño delay para aplicar la animación
+        }
+
+        function startCarousel() {
+            clearInterval(carouselInterval);
+            carouselInterval = setInterval(() => {
+                currentFileIndex = (currentFileIndex + 1) % files.length;
+                loadFile(currentFileIndex);
+            }, 10000); // Cambia de imagen cada 10 segundos
+        }
+
+        document.getElementById("prevButton").addEventListener("click", function() {
+            if (currentFileIndex > 0) {
+                currentFileIndex--;
+                loadFile(currentFileIndex);
+            }
+        });
+
+        document.getElementById("nextButton").addEventListener("click", function() {
+            if (currentFileIndex < files.length - 1) {
+                currentFileIndex++;
+                loadFile(currentFileIndex);
+            }
+        });
+
+        document.getElementById("startButton").addEventListener("click", function() {
+            document.getElementById("termsModal").style.display = "block";
+        });
+
+        document.querySelector(".close-button").addEventListener("click", function() {
+            document.getElementById("termsModal").style.display = "none";
+        });
+
+        document.getElementById("cancelButton").addEventListener("click", function() {
+            document.getElementById("termsModal").style.display = "none";
+        });
+
+        document.getElementById("acceptButton").addEventListener("click", async function() {
+            const response = await fetch("/grant_access/");
+            const result = await response.json();
+            document.getElementById("status").innerText = result.message;
+            document.getElementById("termsModal").style.display = "none";
+        });
+
+        window.addEventListener("click", function(event) {
+            if (event.target == document.getElementById("termsModal")) {
+                document.getElementById("termsModal").style.display = "none";
+            }
+        });
+
+        loadFiles();
+
+        document.getElementById("acceptButton").addEventListener("click", async function() {
+            const response = await fetch("/grant_access/", { method: "POST" });
+            const result = await response.json();
+            document.getElementById("status").innerText = result.message;
+            document.getElementById("termsModal").style.display = "none";
+
+            // Redirigir al usuario a la red deseada (por ejemplo, Google)
+            window.location.href = "http://www.google.com";
+        });
+    </script>
+</body>
+</html>

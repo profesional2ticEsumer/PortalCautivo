@@ -1,0 +1,189 @@
+@font-face {
+    font-family: 'Poppins';
+    src: url('../fonts/Poppins-Regular.ttf') format('truetype');
+}
+
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    color: #333;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+h3 {
+    color: #333;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+p {
+    color: #666;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+form {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-width: 800px;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+input[type="file"] {
+    font-size: 16px; /* Aumenta el tamaño del texto */
+    padding: 15px; /* Ajusta el espaciado interno */
+    transform: scale(1.1); /* Escala el botón */
+    cursor: pointer;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+button {
+    background-color: #003366;
+    font-family: 'Poppins', Arial, sans-serif;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #002244;
+}
+
+.buttonDelete {
+    background-color: #660000;
+    font-family: 'Poppins', Arial, sans-serif;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.buttonDelete:hover {
+    background-color: #660000;
+}
+
+#fileList {
+    text-align: left;
+    margin: 20px auto;
+    max-width: 500px;
+}
+
+#fileTable {
+    width: 100%;
+    max-width: 800%;
+    border-collapse: collapse;
+}
+
+#fileTable th, #fileTable td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+#fileTable th {
+    background-color: #f2f2f2;
+}
+
+label {
+    margin-left: 10px;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+#status {
+    color: #333;
+    margin-top: 20px;
+}
+
+.imgEsumer {
+    width: 300px; 
+    height: auto;
+}
+
+button + button {
+    margin-left: 10px; /* Añade espacio entre los botones */
+}
+
+/* El resto de tu CSS existente */
+
+/* El resto de tu CSS existente */
+
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed; /* Fijo en la pantalla */
+    z-index: 1; /* Por encima de otros elementos */
+    padding-top: 60px; /* Espacio superior */
+    left: 0;
+    top: 0;
+    width: 100%; /* Ancho completo */
+    height: 100%; /* Alto completo */
+    overflow: auto; /* Desplazamiento si es necesario */
+    background-color: rgb(0,0,0); /* Color de fondo */
+    background-color: rgba(0,0,0,0.9); /* Fondo con opacidad */
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+
+#caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: auto; /* Ajusta la altura automáticamente */
+}
+
+.modal-content, #caption {  
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@keyframes zoom {
+    from {transform: scale(0)} 
+    to {transform: scale(1)}
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
